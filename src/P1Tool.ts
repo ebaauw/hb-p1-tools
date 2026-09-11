@@ -1,17 +1,26 @@
-// hb-p1-tools/lib/P1Tool.js
+// hb-p1-tools/src/P1Tool.ts
 //
 // Homebridge P1 Tools.
 // Copyright © 2020-2026 Erik Baauw. All rights reserved.
 
+/** The `p1` command line tool.
+  * Issue `p1 -h` for more info.
+  * @module
+  */
+
+import type { integer, jsonMap } from 'hb-lib-tools'
+import type { Mode } from 'hb-lib-tools/CommandLineTool'
+
 import { timeout } from 'hb-lib-tools'
-import { CommandLineParser } from 'hb-lib-tools/CommandLineParser'
-import { CommandLineTool } from 'hb-lib-tools/CommandLineTool'
+import { CommandLineTool, CommandLineParser, b, u } from 'hb-lib-tools/CommandLineTool'
 import { JsonFormatter } from 'hb-lib-tools/JsonFormatter'
-import { OptionParser } from 'hb-lib-tools/OptionParser'
+import { toHostString, toInt } from 'hb-lib-tools/OptionParser'
 
 import { P1Client } from 'hb-p1-tools/P1Client'
 
-const { b, u } = CommandLineTool
+import defaultPackageJson from '../package.json' with { type: 'json' }
+
+const CLOSE_TIMEOUT = 500
 
 const usage = `${b('ws')} [${b('-hVDds')}] [${b('-H')} ${u('hostname')}${b(':')}${u('port')}] [${b('-t')} ${u('timeout')}]`
 const help = `P1 tool.
@@ -43,10 +52,20 @@ Parameters:
   ${b('-t')} ${u('timeout')}, ${b('--timeout=')}${u('timeout')}
   Set timeout to ${u('timeout')} seconds instead of default ${b('15')}.`
 
+/** @ignore */
 class P1Tool extends CommandLineTool {
-  constructor (pkgJson) {
+  protected _packageJson: jsonMap
+  options: {
+    mode?: Mode
+    dsmr22: boolean
+    serialPort?: string
+    timeout: integer
+  }
+  private p1?: P1Client
+  
+  constructor (packageJson?: jsonMap) {
     super()
-    this.pkgJson = pkgJson
+    this._packageJson = packageJson ?? defaultPackageJson
     this.usage = usage
     this.options = {
       dsmr22: false,
@@ -54,25 +73,25 @@ class P1Tool extends CommandLineTool {
     }
   }
 
-  parseArguments () {
-    const parser = new CommandLineParser(this.pkgJson)
+  parseArguments (): void {
+    const parser = new CommandLineParser(this)
     parser
-      .help('h', 'help', help)
-      .version('V', 'version')
-      .debug('D', 'debug', this)
-      .flag('d', 'daemon', (key) => { this.options.mode = 'daemon' })
-      .flag('s', 'service', (key) => { this.options.mode = 'service' })
-      .option('H', 'host', (value, key) => {
-        this.options.serialPort = OptionParser.toHost(key, value, true, true)
+      .helpFlag('h', 'help', help)
+      .versionFlag('V', 'version')
+      .debugFlag('D', 'debug')
+      .flag('d', 'daemon', () => { this.options.mode = 'daemon' })
+      .flag('s', 'service', () => { this.options.mode = 'service' })
+      .option('H', 'host', (value) => {
+        this.options.serialPort = toHostString(value, { key: 'host', userInput: true  })
       })
-      .flag('2', 'dsmr22', (key) => { this.options.dsmr22 = true })
-      .option('t', 'timeout', (value, key) => {
-        this.options.timeout = OptionParser.toInt(key, value, 1, 60, true)
+      .flag('2', 'dsmr22', () => { this.options.dsmr22 = true })
+      .option('t', 'timeout', (value) => {
+        this.options.timeout = toInt(value, { key: 'timeout', min: 1, max: 60, userInput: true })
       })
       .parse()
   }
 
-  async _main () {
+  async main (): Promise<void> {
     this.parseArguments()
     this.p1 = new P1Client({
       dsmr22: this.options.dsmr22,
@@ -85,7 +104,7 @@ class P1Tool extends CommandLineTool {
         ? { noWhiteSpace: true, sortKeys: true }
         : { sortKeys: true }
     )
-    if (this.options.mode) {
+    if (this.options.mode != null) {
       this.setOptions({ mode: this.options.mode })
     }
     this.p1.on('data', (data) => { this.log(formatter.stringify(data)) })
@@ -93,19 +112,13 @@ class P1Tool extends CommandLineTool {
       await this.p1.open()
     } catch (error) {
       delete this.p1
-      this.fatal(error)
+      this.error(error)
     }
   }
 
-  async main () {
-    try {
-      await this._main()
-    } catch (error) { this.error(error) }
-  }
-
-  async destroy () {
+  async destroy (): Promise<void> {
     await this.p1?.close()
-    await timeout(500)
+    await timeout(CLOSE_TIMEOUT)
   }
 }
 
