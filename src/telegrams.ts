@@ -209,4 +209,4 @@ const v50be17 = `/FLU5\\253770234_A\r
 !27BC\r
 `
 
-export const telegrams = { v22, v42, v42l3, v50, v50l3, v50be, v50be17 }
+export const telegrams: Record<string, string> = { v22, v42, v42l3, v50, v50l3, v50be, v50be17 }
