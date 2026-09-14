@@ -5,7 +5,7 @@
 
 // Telegrams for testing.
 
-export const v22 = `/XMX5XMXABCE000063181\r
+const v22 = `/XMX5XMXABCE000063181\r
 \r
 0-0:96.1.1(31333634303033302020202020202020)\r
 1-0:1.8.1(32586.251*kWh)\r
@@ -24,7 +24,7 @@ export const v22 = `/XMX5XMXABCE000063181\r
 !\r
 `
 
-export const v42 = `/KFM5KAIFA-METER\r
+const v42 = `/KFM5KAIFA-METER\r
 \r
 1-3:0.2.8(42)\r
 0-0:1.0.0(190228205019W)\r
@@ -52,7 +52,7 @@ export const v42 = `/KFM5KAIFA-METER\r
 !4983\r
 `
 
-export const v42l3 = `/KFM5KAIFA-METER\r
+const v42l3 = `/KFM5KAIFA-METER\r
 \r
 1-3:0.2.8(42)\r
 0-0:1.0.0(220108000226W)\r
@@ -87,7 +87,7 @@ export const v42l3 = `/KFM5KAIFA-METER\r
 !EF9E\r
 `
 
-export const v50 = `/XMX5LGBBLA4415290514\r
+const v50 = `/XMX5LGBBLA4415290514\r
 \r
 1-3:0.2.8(50)\r
 0-0:1.0.0(180901194246S)\r
@@ -115,7 +115,7 @@ export const v50 = `/XMX5LGBBLA4415290514\r
 !22EE\r
 `
 
-export const v50l3 = `/ISK5\\2M550T-1012\r
+const v50l3 = `/ISK5\\2M550T-1012\r
 \r
 1-3:0.2.8(50)\r
 0-0:1.0.0(191229233714W)\r
@@ -152,7 +152,7 @@ export const v50l3 = `/ISK5\\2M550T-1012\r
 !58E5\r
 `
 
-export const v50be = `/FLU5\\253770234_A\r
+const v50be = `/FLU5\\253770234_A\r
 \r
 0-0:96.1.4(50215)\r
 0-0:96.1.1(3153414731313030303736363136)\r
@@ -179,7 +179,7 @@ export const v50be = `/FLU5\\253770234_A\r
 !85AF\r
 `
 
-export const v50be17 = `/FLU5\\253770234_A\r
+const v50be17 = `/FLU5\\253770234_A\r
 \r
 0-0:96.1.4(50217)\r
 0-0:96.1.1(3153414731313035333032343531)\r
@@ -208,3 +208,5 @@ export const v50be17 = `/FLU5\\253770234_A\r
 0-1:24.2.3(230205190959W)(00481.628*m3)\r
 !27BC\r
 `
+
+export const telegrams = { v22, v42, v42l3, v50, v50l3, v50be, v50be17 }
