@@ -14,6 +14,7 @@ import { createConnection } from 'node:net'
 import { toHexString, toJsonMap } from 'hb-lib-tools'
 import { toHost, toHostString, toInt, toPath } from 'hb-lib-tools/OptionParser'
 
+const PORT: integer = 2000
 const TIMEOUT: integer = 5
 const TIMEOUT_DSMR22: integer = 50
 
@@ -67,7 +68,6 @@ function parseValue (value: string): number {
   }
   switch (unit ?? 's') {
     case 's':
-      return parseInt(val, 10)
     case 'kWh':
     case 'V':
     case 'A':
@@ -560,7 +560,7 @@ class P1Client extends EventEmitter<Events> {
       serialPort = this.options.host // eslint-disable-line @typescript-eslint/prefer-destructuring -- no
       const { hostname, port } = toHost(this.options.host)
       this.#setTimeout()
-      this.p1 = createConnection(port ?? 0, hostname)
+      this.p1 = createConnection(port ?? PORT, hostname)
       await once(this.p1, 'ready')
     }
     this.p1
@@ -627,7 +627,7 @@ class P1Client extends EventEmitter<Events> {
   }
 
   #parse (telegram: string): Flat | undefined {
-    let a = /\/(?<header>.+)\r\n\r\n(?<lines>(?:\d+-\d+:\d+\.\d+\.\d+(?:\(.*\)\r?\n?)+\r\n)*)(?<footer>![0-9A-F]{4})?\r\n/.exec(telegram)
+    let a = /\/(?<header>.+)\r\n\r\n(?<lines>(?:\d+-\d+:\d+\.\d+\.\d+(?:\(.*\)\r?\n?)+\r\n)*)(?<footer>!(?:[0-9A-F]{4})?)\r\n/.exec(telegram)
     if (a?.groups == null) {
       this.warn('ignoring invalid telegram')
       return
@@ -672,6 +672,7 @@ class P1Client extends EventEmitter<Events> {
       p1Keys[k].forEach(({ key, f, fa }) => {
         try {
           if (key === undefined) {
+            values.shift()
             return
           }
           if (f !== undefined) {
@@ -763,23 +764,18 @@ class P1Client extends EventEmitter<Events> {
           }
         }
       }
-      if (
-        obj.l2_current != null &&  obj.l2_power != null && obj.l2_voltage != null &&
-        obj.l2_sags != null && obj.l2_swells != null &&
-        obj.l3_current != null &&  obj.l3_power != null && obj.l3_voltage != null &&
-        obj.l3_sags != null && obj.l3_swells != null
-      ) {
+      if (obj.l2_power != null && obj.l3_power != null) {
         result.electricity.l2 = {
-          current: ((obj.l2_power_back ?? 0) > 0) ? 0 : obj.l2_current,
-          power: obj.l2_power,
+          voltage: obj.l2_voltage,
           sags: obj.l2_sags,
           swells: obj.l2_swells,
-          voltage: obj.l2_voltage
+          current: ((obj.l2_power_back ?? 0) > 0) ? 0 : obj.l2_current,
+          power: obj.l2_power
         }
         result.electricityBack.l2 = {
+          voltage: obj.l2_voltage,
           current: ((obj.l2_power_back ?? 0) > 0) ? obj.l2_current : 0,
-          power: obj.l2_power_back ?? 0,
-          voltage: obj.l2_voltage
+          power: obj.l2_power_back
         }
         result.electricity.l3 = {
           voltage: obj.l3_voltage,
@@ -791,7 +787,7 @@ class P1Client extends EventEmitter<Events> {
         result.electricityBack.l3 = {
           voltage: obj.l3_voltage,
           current: ((obj.l3_power_back ?? 0) > 0) ? obj.l3_current : 0,
-          power: obj.l3_power_back ?? 0
+          power: obj.l3_power_back
         }
       }
 
