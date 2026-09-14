@@ -58,6 +58,7 @@ class P1Tool extends CommandLineTool {
   options: {
     mode?: Mode
     dsmr22: boolean
+    host?: string
     serialPort?: string
     timeout: integer
   }
@@ -82,7 +83,7 @@ class P1Tool extends CommandLineTool {
       .flag('d', 'daemon', () => { this.options.mode = 'daemon' })
       .flag('s', 'service', () => { this.options.mode = 'service' })
       .option('H', 'host', (value) => {
-        this.options.serialPort = toHostString(value, { key: 'host', userInput: true  })
+        this.options.host = toHostString(value, { key: 'host', userInput: true  })
       })
       .flag('2', 'dsmr22', () => { this.options.dsmr22 = true })
       .option('t', 'timeout', (value) => {
@@ -96,6 +97,7 @@ class P1Tool extends CommandLineTool {
     this.p1 = new P1Client({
       dsmr22: this.options.dsmr22,
       logger: this,
+      host: this.options.host,
       serialPort: this.options.serialPort,
       timeout: this.options.timeout
     })
@@ -117,7 +119,7 @@ class P1Tool extends CommandLineTool {
   }
 
   async destroy (): Promise<void> {
-    await this.p1?.close()
+    this.p1?.close()
     await timeout(CLOSE_TIMEOUT)
   }
 }
