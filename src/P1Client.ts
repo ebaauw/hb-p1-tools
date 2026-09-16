@@ -695,7 +695,7 @@ class P1Client extends EventEmitter<Events> {
     * It can also be called manually to have P1Cient emit events for a fake
     * telegram (e.g. for testing).
     */
-  parseTelegram (telegram: string): Telegram { // eslint-disable-line complexity -- no
+  parseTelegram (telegram: string): Telegram | undefined{ // eslint-disable-line complexity -- no
     const debug = this.firstTelegram ? this.debug.bind(this) : this.vdebug.bind(this)
     this.firstTelegram &&= false
     debug('telegram:\n%s', telegram)
@@ -703,7 +703,7 @@ class P1Client extends EventEmitter<Events> {
     try {
       const obj = this.#parse(telegram)
       if (obj == null) {
-        return toTelegram({})
+        return
       }
       debug('raw data: %j', obj)
 
@@ -735,17 +735,11 @@ class P1Client extends EventEmitter<Events> {
           power: obj.power,
           avg_power: obj.avg_power,
           avg_power_peaks: obj.avg_power_peaks,
+          breaker: obj.breaker,
           failures: {
             short: obj.failures_short,
             long: obj.failures_long,
             log: obj.log
-          },
-          l1: {
-            voltage: obj.l1_voltage,
-            sags: obj.l1_sags,
-            swells: obj.l1_swells,
-            current: ((obj.l1_power_back ?? 0) > 0) ? 0 : obj.l1_current,
-            power: obj.l1_power
           }
         },
         electricityBack: {
@@ -756,69 +750,42 @@ class P1Client extends EventEmitter<Events> {
             low: obj[`consumption_back_t${low}`],
             normal: obj[`consumption_back_t${normal}`]
           },
-          power: obj.power_back,
-          l1: {
-            voltage: obj.l1_voltage,
-            current: ((obj.l1_power_back ?? 0) > 0) ? obj.l1_current : 0,
-            power: obj.l1_power_back
-          }
-        }
-      }
-      if (obj.l2_power != null && obj.l3_power != null) {
-        result.electricity.l2 = {
-          voltage: obj.l2_voltage,
-          sags: obj.l2_sags,
-          swells: obj.l2_swells,
-          current: ((obj.l2_power_back ?? 0) > 0) ? 0 : obj.l2_current,
-          power: obj.l2_power
-        }
-        result.electricityBack.l2 = {
-          voltage: obj.l2_voltage,
-          current: ((obj.l2_power_back ?? 0) > 0) ? obj.l2_current : 0,
-          power: obj.l2_power_back
-        }
-        result.electricity.l3 = {
-          voltage: obj.l3_voltage,
-          sags: obj.l3_sags,
-          swells: obj.l3_swells,
-          current: ((obj.l3_power_back ?? 0)> 0) ? 0 : obj.l3_current,
-          power: obj.l3_power
-        }
-        result.electricityBack.l3 = {
-          voltage: obj.l3_voltage,
-          current: ((obj.l3_power_back ?? 0) > 0) ? obj.l3_current : 0,
-          power: obj.l3_power_back
+          power: obj.power_back
         }
       }
 
-      if (obj.d1_type != null && obj.d1_id != null && obj.d1_lastupdated != null && obj.d1_consumption != null) {
-        result[obj.d1_type] = {
-          id: obj.d1_id.trim(),
-          lastupdated: obj.d1_lastupdated,
-          consumption: obj.d1_consumption
+      for (const l of ['l1', 'l2', 'l3']) {
+        const { [`${l}_power_back`]: powerBack } = obj
+        if ((l !== 'l1' && obj[`${l}_power`] == null) || typeof powerBack !== 'number') {
+          continue
+        }
+        result.electricity[l] = {
+          voltage: obj[`${l}_voltage`],
+          sags: obj[`${l}_sags`],
+          swells: obj[`${l}_swells`],
+          current: powerBack > 0 ? 0 : obj[`${l}_current`],
+          power: obj[`${l}_power`]
+        }
+        result.electricityBack[l] = {
+          voltage: obj[`${l}_voltage`],
+          current: powerBack > 0 ? obj[`${l}_current`] : 0,
+          power: powerBack
         }
       }
-      if (obj.d2_type != null && obj.d2_id != null && obj.d2_lastupdated != null && obj.d2_consumption != null) {
-        result[obj.d2_type] = {
-          id: obj.d2_id.trim(),
-          lastupdated: obj.d2_lastupdated,
-          consumption: obj.d2_consumption
+
+      for (const d of ['d1', 'd2', 'd3', 'd4']) {
+        const { [`${d}_type`]: type, [`${d}_id`]: id } = obj
+        if (typeof type !== 'string' || typeof id !== 'string' || obj[`${d}_lastupdated`] == null || obj[`${d}_consumption`] == null) {
+          continue
+        }
+        result[type] = {
+          id: id.trim(),
+          lastupdated: obj[`${d}_lastupdated`],
+          consumption: obj[`${d}_consumption`],
+          breaker: obj[`${d}_breaker`]
         }
       }
-      if (obj.d3_type != null && obj.d3_id != null && obj.d3_lastupdated != null && obj.d3_consumption != null) {
-        result[obj.d3_type] = {
-          id: obj.d3_id.trim(),
-          lastupdated: obj.d3_lastupdated,
-          consumption: obj.d3_consumption
-        }
-      }
-      if (obj.d4_type != null && obj.d4_id != null && obj.d4_lastupdated != null && obj.d4_consumption != null) {
-        result[obj.d4_type] = {
-          id: obj.d4_id.trim(),
-          lastupdated: obj.d4_lastupdated,
-          consumption: obj.d4_consumption
-        }
-      }
+
       const res = toTelegram(result)
       this.debug('data: %j', res)
       this.emit('data', res)
@@ -826,7 +793,6 @@ class P1Client extends EventEmitter<Events> {
     } catch (error) {
       this.warn(error)
     }
-    return toTelegram({})
   }
 }
 
