@@ -146,7 +146,7 @@ const p1Keys: Record<string, P1Key[]> = {
   '0-0:1.0.0': [{ key: 'lastupdated', f: parseTimestamp }],
   '0-0:17.0.0': [{ key: 'max_power', f: parseValue }], // be
   '0-0:96.1.1': [{ key: 'id', f: parseString }],
-  '0-0:96.1.4': [{ key: 'version', f: parseVersion }], // be
+  '0-0:96.1.4': [{ key: 'version_be', f: parseVersion }], // be
   '0-0:96.3.10': [{ key: 'breaker', f: parseBreaker }], // be
   '0-0:96.7.9': [{ key: 'failures_long', f: parseValue }],
   '0-0:96.7.21': [{ key: 'failures_short', f: parseValue }],
@@ -721,7 +721,7 @@ class P1Client extends EventEmitter<Events> {
         electricityBack: Record<string, unknown>
       } = {
         type: obj.type,
-        version: obj.version ?? '2.2',
+        version: obj.version_be ?? obj.version ?? '2.2',
         msg_text: obj.msg_text,
         msg_num: obj.msg_num,
         electricity: {
