@@ -96,9 +96,13 @@ function parseBreaker (value: string): string {
 function parseType (value: string): string {
   const type = parseValue(value)
   switch (type) {
-    case 3: return 'gas' // eslint-disable-line @typescript-eslint/no-magic-numbers -- no
-    case 7: return 'water' // eslint-disable-line @typescript-eslint/no-magic-numbers -- no
+    /* eslint-disable @typescript-eslint/no-magic-numbers -- no */
+    case 2: return 'electricity2'
+    case 3: return 'gas'
+    case 4: return 'heat'
+    case 7: return 'water'
     default: return `d${type}`
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
 }
 
@@ -140,27 +144,27 @@ interface P1Key {
 
 const p1Keys: Record<string, P1Key[]> = {
   '0-0:1.0.0': [{ key: 'lastupdated', f: parseTimestamp }],
-  '0-0:17.0.0': [{ key: 'max_power', f: parseValue }],
+  '0-0:17.0.0': [{ key: 'max_power', f: parseValue }], // be
   '0-0:96.1.1': [{ key: 'id', f: parseString }],
-  '0-0:96.1.4': [{ key: 'version_be', f: parseVersion }],
-  '0-0:96.3.10': [{ key: 'breaker', f: parseBreaker }],
+  '0-0:96.1.4': [{ key: 'version', f: parseVersion }], // be
+  '0-0:96.3.10': [{ key: 'breaker', f: parseBreaker }], // be
   '0-0:96.7.9': [{ key: 'failures_long', f: parseValue }],
   '0-0:96.7.21': [{ key: 'failures_short', f: parseValue }],
   '0-0:96.13.0': [{ key: 'msg_text', f: parseString }],
-  '0-0:96.13.1': [{ key: 'msg_num', f: parseString }],
+  '0-0:96.13.1': [{ key: 'msg_num', f: parseString }], // v22, v42
   '0-0:96.14.0': [{ key: 'tariff', f: parseValue }],
-  '0-0:98.1.0': [{ key: 'avg_power_peaks', fa: parseAvgPowerPeaks }],
+  '0-0:98.1.0': [{ key: 'avg_power_peaks', fa: parseAvgPowerPeaks }], // be
 
   '0-1:24.1.0': [{ key: 'd1_type', f: parseType }],
   '0-1:24.2.1': [
     { key: 'd1_lastupdated', f: parseTimestamp },
     { key: 'd1_consumption', f: parseValue }
   ],
-  '0-1:24.2.3': [
+  '0-1:24.2.3': [ // be gas
     { key: 'd1_lastupdated', f: parseTimestamp },
     { key: 'd1_consumption', f: parseValue }
   ],
-  '0-1:24.3.0': [
+  '0-1:24.3.0': [ // v22
     { key: 'd1_lastupdated', f: parseTimestamp },
     {},
     {},
@@ -169,7 +173,7 @@ const p1Keys: Record<string, P1Key[]> = {
     {},
     { key: 'd1_consumption', f: parseValue }
   ],
-  '0-1:24.4.0': [{ key: 'd1_breaker', f: parseBreaker }],
+  '0-1:24.4.0': [{ key: 'd1_breaker', f: parseBreaker }], // be
   '0-1:96.1.0': [{ key: 'd1_id', f: parseString }],
   '0-1:96.1.1': [{ key: 'd1_id', f: parseString }],
 
@@ -178,11 +182,11 @@ const p1Keys: Record<string, P1Key[]> = {
     { key: 'd2_lastupdated', f: parseTimestamp },
     { key: 'd2_consumption', f: parseValue }
   ],
-  '0-2:24.2.3': [
+  '0-2:24.2.3': [ // be gas
     { key: 'd2_lastupdated', f: parseTimestamp },
     { key: 'd2_consumption', f: parseValue }
   ],
-  '0-2:24.3.0': [
+  '0-2:24.3.0': [ // v22
     { key: 'd2_lastupdated', f: parseTimestamp },
     {},
     {},
@@ -191,7 +195,7 @@ const p1Keys: Record<string, P1Key[]> = {
     {},
     { key: 'd2_consumption', f: parseValue }
   ],
-  '0-2:24.4.0': [{ key: 'd2_breaker', f: parseBreaker }],
+  '0-2:24.4.0': [{ key: 'd2_breaker', f: parseBreaker }], // be
   '0-2:96.1.0': [{ key: 'd2_id', f: parseString }],
   '0-2:96.1.1': [{ key: 'd2_id', f: parseString }],
 
@@ -200,11 +204,11 @@ const p1Keys: Record<string, P1Key[]> = {
     { key: 'd3_lastupdated', f: parseTimestamp },
     { key: 'd3_consumption', f: parseValue }
   ],
-  '0-3:24.2.3': [
+  '0-3:24.2.3': [ // be gas
     { key: 'd3_lastupdated', f: parseTimestamp },
     { key: 'd3_consumption', f: parseValue }
   ],
-  '0-3:24.3.0': [
+  '0-3:24.3.0': [ // v22
     { key: 'd3_lastupdated', f: parseTimestamp },
     {},
     {},
@@ -213,7 +217,7 @@ const p1Keys: Record<string, P1Key[]> = {
     {},
     { key: 'd3_consumption', f: parseValue }
   ],
-  '0-3:24.4.0': [{ key: 'd3_breaker', f: parseBreaker }],
+  '0-3:24.4.0': [{ key: 'd3_breaker', f: parseBreaker }], // be
   '0-3:96.1.0': [{ key: 'd3_id', f: parseString }],
   '0-3:96.1.1': [{ key: 'd3_id', f: parseString }],
 
@@ -222,7 +226,7 @@ const p1Keys: Record<string, P1Key[]> = {
     { key: 'd4_lastupdated', f: parseTimestamp },
     { key: 'd4_consumption', f: parseValue }
   ],
-  '0-4:24.2.3': [
+  '0-4:24.2.3': [ // be gas
     { key: 'd4_lastupdated', f: parseTimestamp },
     { key: 'd4_consumption', f: parseValue }
   ],
@@ -235,12 +239,12 @@ const p1Keys: Record<string, P1Key[]> = {
     {},
     { key: 'd4_consumption', f: parseValue }
   ],
-  '0-4:24.4.0': [{ key: 'd4_breaker', f: parseBreaker }],
+  '0-4:24.4.0': [{ key: 'd4_breaker', f: parseBreaker }], // be
   '0-4:96.1.0': [{ key: 'd4_id', f: parseString }],
   '0-4:96.1.1': [{ key: 'd4_id', f: parseString }],
 
-  '1-0:1.4.0': [{ key: 'avg_power', f: parseValue }],
-  '1-0:1.6.0': [{ key: 'avg_power_peak', fa: parseAvgPowerPeak }],
+  '1-0:1.4.0': [{ key: 'avg_power', f: parseValue }], // be
+  '1-0:1.6.0': [{ key: 'avg_power_peak', fa: parseAvgPowerPeak }], // be
   '1-0:1.7.0': [{ key: 'power', f: parseValue }],
   '1-0:1.8.1': [{ key: 'consumption_t1', f: parseValue }],
   '1-0:1.8.2': [{ key: 'consumption_t2', f: parseValue }],
@@ -272,7 +276,7 @@ const p1Keys: Record<string, P1Key[]> = {
 
   '1-0:99.97.0': [{ key: 'log', fa: parseLog }],
 
-  '1-3:0.2.8': [{ key: 'version', f: parseVersion }]
+  '1-3:0.2.8': [{ key: 'version', f: parseVersion }] // nl
 }
 
 interface Flat extends Record<string, json | undefined> {
@@ -601,10 +605,6 @@ class P1Client extends EventEmitter<Events> {
       if ('destroy' in this.p1 && typeof this.p1.destroy === 'function') {
         this.p1.destroy()
       }
-      if ('close' in this.p1 && typeof this.p1.close === 'function') {
-        this.p1.close()
-      }
-      delete this.p1
     }
   }
 
@@ -639,9 +639,9 @@ class P1Client extends EventEmitter<Events> {
       const checksum = parseInt(c, 16)
       const crc = crc16(telegram.slice(0, -6)) // eslint-disable-line @typescript-eslint/no-magic-numbers -- no
       if (checksum !== crc) {
-        const expected = toHexString(crc, { length: 4 })
+        const received = toHexString(crc, { length: 4 })
         this.warn(
-          `ignoring telegram with crc error (got: ${c}, expected: ${expected})`
+          `ignoring telegram with crc error (got: ${received}, expected: ${c})`
         )
         return
       }
@@ -721,7 +721,7 @@ class P1Client extends EventEmitter<Events> {
         electricityBack: Record<string, unknown>
       } = {
         type: obj.type,
-        version: obj.version_be ?? obj.version ?? '2.2',
+        version: obj.version ?? '2.2',
         msg_text: obj.msg_text,
         msg_num: obj.msg_num,
         electricity: {
