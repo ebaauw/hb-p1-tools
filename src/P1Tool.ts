@@ -14,7 +14,7 @@ import type { Mode } from 'hb-lib-tools/CommandLineTool'
 import { timeout } from 'hb-lib-tools'
 import { CommandLineTool, CommandLineParser, b, u } from 'hb-lib-tools/CommandLineTool'
 import { JsonFormatter } from 'hb-lib-tools/JsonFormatter'
-import { toHostString, toInt, toString } from 'hb-lib-tools/OptionParser'
+import { toHostString, toInt, toPath, toString } from 'hb-lib-tools/OptionParser'
 
 import { P1Client } from 'hb-p1-tools/P1Client'
 
@@ -45,9 +45,16 @@ Parameters:
   ${b('-s')}, ${b('--service')}
   Run as service.  Do not output timestamps.
 
+  ${b('-P')} ${u('serialPort')}, ${b('--serialPort=')}${u('serialPort')}
+  Connect to the P1 USB cable using the specified serial port device.
+  Default: auto discovered.
+
   ${b('-H')} ${u('hostname')}${b(':')}${u('port')}, ${b('--host=')}${u('hostname')}${b(':')}${u('port')}
   Connect to the serial port over ${b('ser2net')} at ${u('hostname')}${b(':')}${u('port')}.
   Default: connect to the auto discovered P1 USB cable.
+
+  ${b('-T')} ${u('test')}, ${b('--test=')}${u('test')}
+  Run the specified test telegram.
 
   ${b('-t')} ${u('timeout')}, ${b('--timeout=')}${u('timeout')}
   Set timeout to ${u('timeout')} seconds instead of default ${b('15')}.`
@@ -86,6 +93,9 @@ class P1Tool extends CommandLineTool {
       .option('H', 'host', (value) => {
         this.options.host = toHostString(value, { key: 'host', userInput: true  })
       })
+      .option('P', 'serialPPort', (value) => {
+        this.options.serialPort = toPath(value, { key: 'serialPort', userInput: true })
+      })
       .flag('2', 'dsmr22', () => { this.options.dsmr22 = true })
       .option('T', 'test', (value) => {
         this.options.test = toString(value, { key: 'test', nonEmpty: true, userInput: true })
@@ -119,6 +129,7 @@ class P1Tool extends CommandLineTool {
         const { telegrams } = await import('hb-p1-tools/telegrams')
         if (!(this.options.test in telegrams)) {
           this.error('%s: unknown test telegram', this.options.test)
+          this.logc('available test telegrams:', Object.keys(telegrams).sort().join(' '))
           return
         }
         this.p1.parseTelegram(telegrams[this.options.test])
