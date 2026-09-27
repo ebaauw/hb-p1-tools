@@ -61,7 +61,6 @@ Parameters:
 
 /** @ignore */
 class P1Tool extends CommandLineTool {
-  protected _packageJson: jsonMap
   options: {
     mode?: Mode
     dsmr22: boolean
@@ -73,8 +72,7 @@ class P1Tool extends CommandLineTool {
   private p1?: P1Client
   
   constructor (packageJson?: jsonMap) {
-    super()
-    this._packageJson = packageJson ?? defaultPackageJson
+    super(packageJson ?? defaultPackageJson)
     this.usage = usage
     this.options = {
       dsmr22: false,
