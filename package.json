@@ -32,7 +32,7 @@
     "node": "^24||^22"
   },
   "dependencies": {
-    "hb-lib-tools": "~4.0.0-3",
+    "hb-lib-tools": "~4.0.0-4",
     "serialport": "^13.0.0"
   },
   "devDependencies": {
