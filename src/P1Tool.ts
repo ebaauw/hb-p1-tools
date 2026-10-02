@@ -22,7 +22,8 @@ import defaultPackageJson from '../package.json' with { type: 'json' }
 
 const CLOSE_TIMEOUT = 500
 
-const usage = `${b('ws')} [${b('-hVDds')}] [${b('-H')} ${u('hostname')}${b(':')}${u('port')}] [${b('-t')} ${u('timeout')}]`
+// eslint-disable-next-line max-len -- no
+const usage = `${b('p1')} [${b('-hVDds2')}] [${b('-P')} ${u('serialPort')}|${b('-H')} ${u('hostname')}${b(':')}${u('port')}|${b('-T')} ${u('test')}] [${b('-t')} ${u('timeout')}]`
 const help = `P1 tool.
 
 Usage: ${usage}
@@ -48,6 +49,9 @@ Parameters:
   ${b('-P')} ${u('serialPort')}, ${b('--serialPort=')}${u('serialPort')}
   Connect to the P1 USB cable using the specified serial port device.
   Default: auto discovered.
+
+  ${b('-2')}, ${b('--dsmr22')}
+  Use DSMR v2.2 settings for the serial interface.
 
   ${b('-H')} ${u('hostname')}${b(':')}${u('port')}, ${b('--host=')}${u('hostname')}${b(':')}${u('port')}
   Connect to the serial port over ${b('ser2net')} at ${u('hostname')}${b(':')}${u('port')}.
