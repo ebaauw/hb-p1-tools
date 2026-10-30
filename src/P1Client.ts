@@ -584,6 +584,9 @@ class P1Client extends EventEmitter<Events> {
         }
       })
       .on('close', () => {
+        if (this.timeout != null) {
+          clearTimeout(this.timeout)
+        }
         this.p1?.removeAllListeners()
         delete this.p1
         this.debug('disconnected from %s', serialPort)
