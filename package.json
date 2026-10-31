@@ -32,12 +32,11 @@
     "node": "^26||^24||^22"
   },
   "dependencies": {
-    "hb-lib-tools": "~4.0.0-5",
+    "hb-lib-tools": "~4.0.0-6",
     "serialport": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/chalk": "^2.2.4",
     "@types/node": "^22.20.2",
     "@types/semver": "^7.8.0",
     "eslint-config-love": "^156.0.0",
