@@ -128,7 +128,7 @@ class P1Tool extends CommandLineTool {
       }
       this.p1.on('data', (data) => { this.log(formatter.stringify(data)) })
       if (this.options.test != null) {
-        const { telegrams } = await import('hb-p1-tools/telegrams')
+        const telegrams: Record<string, string> = await import('hb-p1-tools/telegrams')
         if (!(this.options.test in telegrams)) {
           this.error('%s: unknown test telegram', this.options.test)
           this.logc('available test telegrams:', Object.keys(telegrams).sort().join(' '))
