@@ -5,7 +5,8 @@
 
 // Telegrams for testing.
 
-const v22 = `/XMX5XMXABCE000063181\r
+/** DSMR v2.2, single phase, solar panels, gas. */
+export const v22 = `/XMX5XMXABCE000063181\r
 \r
 0-0:96.1.1(31333634303033302020202020202020)\r
 1-0:1.8.1(32586.251*kWh)\r
@@ -24,7 +25,8 @@ const v22 = `/XMX5XMXABCE000063181\r
 !\r
 `
 
-const v42 = `/KFM5KAIFA-METER\r
+/** DSMR v4.2, single phase, solar panels, gas. */
+export const v42 = `/KFM5KAIFA-METER\r
 \r
 1-3:0.2.8(42)\r
 0-0:1.0.0(190228205019W)\r
@@ -52,7 +54,8 @@ const v42 = `/KFM5KAIFA-METER\r
 !4983\r
 `
 
-const v42l3 = `/KFM5KAIFA-METER\r
+/** DSMR v4.2, three phases, solar panels. */
+export const v42l3 = `/KFM5KAIFA-METER\r
 \r
 1-3:0.2.8(42)\r
 0-0:1.0.0(220108000226W)\r
@@ -87,7 +90,8 @@ const v42l3 = `/KFM5KAIFA-METER\r
 !EF9E\r
 `
 
-const v50 = `/XMX5LGBBLA4415290514\r
+/** DSMR v5.0, single phase, gas */
+export const v50 = `/XMX5LGBBLA4415290514\r
 \r
 1-3:0.2.8(50)\r
 0-0:1.0.0(180901194246S)\r
@@ -115,7 +119,8 @@ const v50 = `/XMX5LGBBLA4415290514\r
 !22EE\r
 `
 
-const v50l3 = `/ISK5\\2M550T-1012\r
+/** DSMR v5.0, three phases, gas. */
+export const v50l3 = `/ISK5\\2M550T-1012\r
 \r
 1-3:0.2.8(50)\r
 0-0:1.0.0(191229233714W)\r
@@ -151,7 +156,9 @@ const v50l3 = `/ISK5\\2M550T-1012\r
 1-0:62.7.0(00.000*kW)\r
 !58E5\r
 `
-const v50be = `/FLU5\\253770234_A\r
+
+/** DSMR v5.0 Flandres, single phase, solar panels, gas */
+export const v50be = `/FLU5\\253770234_A\r
 \r
 0-0:96.1.4(50215)\r
 0-0:96.1.1(3153414731313030303736363136)\r
@@ -178,7 +185,8 @@ const v50be = `/FLU5\\253770234_A\r
 !85AF\r
 `
 
-const v50be17 = `/FLU5\\253770234_A\r
+/** DSMR v5.0 Flandres, single phase, solar panels, gas */
+export const v50be17 = `/FLU5\\253770234_A\r
 \r
 0-0:96.1.4(50217)\r
 0-0:96.1.1(3153414731313035333032343531)\r
@@ -209,7 +217,8 @@ const v50be17 = `/FLU5\\253770234_A\r
 `
 
 // Source: eMUCs – P1 V1.7.1, section 5.1
-const v50begw = `/FLU5\\253770234_A\r
+/** DSMR v5.0 Flandres, single phase, solar panels, gas, water */
+export const v50begw = `/FLU5\\253770234_A\r
 \r
 0-0:96.1.4(50217)\r
 0-0:96.1.1(3153414731313030303030323331)\r
@@ -243,7 +252,8 @@ const v50begw = `/FLU5\\253770234_A\r
 `
 
 // Source: eMUCs – P1 V1.7.1, section 5.2
-const v50be3gw = `/FLU5\\253769484_A\r
+/** DSMR v5.0 Flandres, three phases, solar panels, gas, water */
+export const v50be3gw = `/FLU5\\253769484_A\r
 \r
 0-0:96.1.4(50217)\r
 0-0:96.1.1(3153414733313031303231363035)\r
@@ -281,5 +291,3 @@ const v50be3gw = `/FLU5\\253769484_A\r
 0-2:24.2.1(200512134558S)(00872.234*m3)\r
 !ADA9\r
 `
-
-export const telegrams: Record<string, string> = { v22, v42, v42l3, v50, v50l3, v50be, v50be17, v50begw, v50be3gw }
